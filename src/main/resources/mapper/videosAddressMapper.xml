@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="com.video.mapper.VideosAddressMapper">
+    <delete id="deleteBatchVideoIds" parameterType="java.util.List">
+        delete from videos_address where id in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </delete>
+    <select id="selectAddressId" resultType="com.video.dto.AllCollectionsDto">
+        SELECT
+            id,
+            collection,
+            vip,
+        sidelights_name as sidelightsName,
+        video_status as status
+        FROM
+            videos_address
+        <where>
+            video_id = #{videoId}
+            <if test="status!=null">
+                and video_status = #{status}
+            </if>
+        </where>
+        order by collection
+    </select>
+    <select id="selectAddressId2" resultType="com.video.dto.AllCollectionsDto">
+        SELECT
+            id,
+            collection,
+            vip,
+        sidelights_name as sidelightsName,
+        video_status as status
+        FROM
+            videos_address
+        <where>
+            video_id = #{videoId}
+        <if test="status!=null">
+        and video_status = #{status}
+        </if>
+        </where>
+        order by collection
+    </select>
+    <select id="getAuditVideos" resultType="com.video.dto.AuditVideosDto">
+        SELECT
+            va.id,
+            v.video_name as videoName,
+            v.user_id as userId,
+            va.collection,
+            va.video_status as videoStatus,
+            v.type_name as typeName,
+            va.vip,
+            va.sidelights_name as sidelightsName,
+            va.address
+        FROM
+            videos_address as va,
+            videos as v
+        <where>
+            va.video_id = v.id
+            <if test="status!=null">
+                and va.video_status=#{status}
+            </if>
+        </where>
+    </select>
+    <update id="updateVideoAddress">
+        update videos_address <set>
+        <if test="collections != null"> collection = #{collections}, </if>
+        <if test="newAddress != null"> address = #{newAddress}, </if>
+        <if test="sidelightsName != null"> sidelights_name = #{sidelightsName}, </if>
+        <if test="videoType != null"> video_type = #{videoType}, </if>
+        <if test="vip != null"> vip = #{vip} </if>
+    </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+</mapper>

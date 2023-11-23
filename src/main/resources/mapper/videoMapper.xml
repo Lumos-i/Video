@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+    <mapper namespace="com.video.mapper.VideoMapper">
+
+    <select id="showVideos" resultType="com.video.dto.ShowVideoDto">
+        SELECT DISTINCT
+            v.id,
+            v.user_id as userId,
+            v.video_name as videoName,
+            v.introduction,
+            v.actors,
+            v.collection_nums as collectionNums,
+            v.point_nums as pointNums,
+            v.all_collections as allCollections,
+            v.type_name as typeName,
+            v.cover,
+            v.fragment
+        FROM
+            videos v
+                LEFT JOIN videos_address va ON v.id = va.video_id
+        where v.type_name like concat("%",#{typeName},"%") and va.video_status = 1
+        ORDER BY
+            concat("collection_nums" , "point_nums")
+    </select>
+ <select id="lookVideo" resultType="com.video.dto.LookResultDto">
+     SELECT
+         distinct
+         v.id,
+         v.user_id AS userId,
+         v.video_name AS videoName,
+         v.introduction,
+         v.all_collections AS allCollections,
+         v.director,
+         v.actors,
+         v.type_name AS typeName,
+         v.cover,
+         v.fragment
+     FROM
+         videos v
+             LEFT JOIN videos_address va on v.id = va.video_id or isnull(va.video_id)
+     WHERE
+         (v.video_name LIKE CONCAT('%',#{text}, '%' ) and va.video_status = 1)
+        or (v.type_name like CONCAT( '%',#{text} , '%' ) and video_status = 1)
+
+     ORDER BY
+         collection
+ </select>
+
+    <select id="getTop" resultType="com.video.dto.TopDto">
+        SELECT
+            v.id,
+            v.video_name as videoName,
+            v.introduction,
+            v.all_collections as allCollections,
+            v.director,
+            v.actors,
+            v.cover,
+            v.fragment
+        FROM
+            videos v
+                where v.type_name LIKE CONCAT( '%', #{typeName}, '%')
+        GROUP BY
+            v.video_name
+            LIMIT 10
+    </select>
+    <update id="updateVideo">
+        update  videos <set>
+            <if test="videoName!=null">
+                video_name = #{videoName},
+            </if>
+            <if test="director != null">
+                 director = #{director},
+            </if>
+            <if test="introduction != null">
+                introduction = #{introduction},
+            </if>
+        <if test="actors != null">
+            actors = #{actors},
+        </if>
+        <if test="typeName != null">
+            type_name = #{typeName},
+        </if>
+        <if test="allCollections != null">
+            all_collections = #{allCollections},
+        </if>
+        <if test="newCover != null">
+            cover = #{newCover},
+        </if>
+        <if test="newFragment != null">
+            fragment = #{newFragment}
+        </if>
+            </set>
+        <where>
+            id = #{id}
+            </where>
+    </update>
+</mapper>

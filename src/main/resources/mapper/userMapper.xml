@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.video.mapper.UserMapper">
+    <select id="getCollectionsList" resultType="com.video.dto.ShowVideoDto">
+        select
+               v.user_id,
+               v.video_name,
+               v.introduction,
+               v.actors,
+               v.nums,
+               v.collection_nums,
+               v.point_nums,
+               v.all_collections,
+               t.type_name,
+               va.address,
+               va.collection
+        from
+                videos v
+                left join videos_address va on v.id=va.video_id
+                right join type t on t.id=v.type_id
+                right join collections c on  c.video_id=v.id
+        where
+              c.user_id=#{userId} and va.collection in ("第一集",1);
+    </select>
+    <select id="history" resultType="com.video.dto.HistoryDto">
+        SELECT
+            h.id,
+            h.video_id AS videoid,
+            h.video_address_id AS videoAddressId,
+            v.video_name AS videoName,
+            v.cover,
+            v.fragment,
+            va.collection,
+            va.sidelights_name as sidelightsName,
+            h.progress
+        FROM
+            history h
+                LEFT JOIN videos v ON h.video_id = v.id
+                LEFT JOIN videos_address va ON h.video_address_id = va.id
+        WHERE
+            h.user_id = #{id}
+        ORDER BY
+            h.create_time DESC
+    </select>
+    <select id="getMyVideo" resultType="com.video.dto.VideoDetailDto">
+        SELECT DISTINCT
+            v.id,
+            v.user_id as userId,
+            v.video_name as videoName,
+            v.introduction,
+            v.actors,
+            v.collection_nums as collectionNums,
+            v.point_nums as pointNums,
+            v.all_collections as allCollections,
+            v.type_name as typeName,
+            v.cover,
+            v.fragment,
+            v.create_time as createTime,
+            ifNull(va.video_status,-1) as status
+        FROM
+            videos v
+                LEFT JOIN videos_address va
+                          on v.id = va.video_id
+        <where>
+            <if test="id != null">
+                v.user_id = #{id}
+            </if>
+            <if test="status != null">
+                and va.video_status = #{status}
+            </if>
+        </where>
+        ORDER BY
+            v.create_time
+    </select>
+    <select id="getMyVideo2" resultType="com.video.dto.VideoDetailDto">
+        SELECT DISTINCT
+        v.id,
+        v.user_id as userId,
+        v.video_name as videoName,
+        v.introduction,
+        v.actors,
+        v.collection_nums as collectionNums,
+        v.point_nums as pointNums,
+        v.all_collections as allCollections,
+        v.type_name as typeName,
+        v.cover,
+        v.fragment,
+        v.create_time as createTime,
+        ifNull(va.video_status,-1) as status
+        FROM
+        videos v
+        LEFT JOIN videos_address va
+        on v.id = va.video_id
+        <where>
+            <if test="id != null">
+                v.user_id = #{id}
+            </if>
+                and isnull(va.video_status)
+        </where>
+        ORDER BY
+        v.create_time
+    </select>
+    <select id="searchVideoName" resultType="string">
+        SELECT
+            v.video_name
+        FROM
+            `videos` v
+                right JOIN videos_address va ON v.id = va.video_id
+                AND va.video_status = 1
+        WHERE
+            `video_name` LIKE CONCAT( '%', #{text}, '%' )
+           OR to_pinyin ( `video_name` ) LIKE CONCAT( '%', #{text}, '%' )
+    </select>
+    <select id="searchTypeName" resultType="string">
+        SELECT
+            t.type_name
+        FROM
+            `type` t
+        WHERE
+            `type_name` LIKE CONCAT( '%', #{text}, '%' )
+           OR to_pinyin ( `type_name` ) LIKE CONCAT( '%', #{text}, '%' )
+    </select>
+    <select id="searchUserName" resultType="string">
+        SELECT
+            name
+        FROM
+            user
+        WHERE
+            `name` LIKE CONCAT( '%', #{text}, '%' )
+           OR to_pinyin ( `name` ) LIKE CONCAT( '%', #{text}, '%' )
+    </select>
+</mapper>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--映射文件-->
+<mapper namespace="com.video.mapper.FollowMapper">
+ <select id="getFans" resultType="com.video.dto.FollowDto">
+     SELECT
+         u.id,
+         u.name,
+         u.username,
+         u.photo
+     FROM
+         follow f
+             LEFT JOIN user u ON f.main_id = u.id
+     WHERE
+         f.u_id = #{id}
+ </select>
+    <select id="getFollowList" resultType="com.video.dto.FollowDto">
+        SELECT
+            u.id,
+            u.name,
+            u.username,
+            u.photo
+        FROM
+            follow f
+                LEFT JOIN user u ON f.u_id = u.id
+        WHERE
+            f.main_id = #{id}
+    </select>
+</mapper>

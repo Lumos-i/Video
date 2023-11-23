@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--映射文件-->
+<mapper namespace="com.video.mapper.TypeMapper">
+    <select id="getType" resultType="com.video.dto.TypeDto">
+        SELECT
+            if(t1.id = null,t2.id,t1.id) as parentId,
+            t2.id as childId,
+            t1.type_name as mainType,
+            t2.type_name as typeName
+        FROM
+            type t1
+                left join
+            type t2
+            on
+                t1.id  = t2.last_id where t1.type_level = 0
+    </select>
+    <select id="getDetailType" resultType="com.video.dto.TypeClassify">
+        SELECT id,type_name, type_level,type_classify from type where last_id = #{id} and type_classify = #{arg1}
+    </select>
+</mapper>

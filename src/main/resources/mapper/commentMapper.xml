@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.video.mapper.CommentMapper">
+    <select id="getCommentReplyPag" resultType="com.video.dto.CommentReplyDto">
+        SELECT
+            c.id,
+            c.user_id,
+            c.video_id,
+            c.comment_level,
+            c.comment_id,
+            c.comment,
+            c.comment_time,
+            c.comment_love,
+            u.name as userName,
+            u.photo as userPhoto
+        FROM
+            comment as c
+            LEFT JOIN user as u on c.user_id=u.id
+        WHERE
+            c.comment_level=2 and c.comment_id=#{commentId}
+    </select>
+</mapper>

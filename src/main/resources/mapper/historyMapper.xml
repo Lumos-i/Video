@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--映射文件-->
+<mapper namespace="com.video.mapper.HistoryMapper">
+    <select id="getOneHistory" resultType="com.video.dto.OneHistory">
+        SELECT
+            h.video_address_id as id,
+            h.progress,
+            h.video_id as videoId,
+            va.address,
+            va.sidelights_name as sidelightsName,
+            va.collection
+        FROM
+            history h
+                LEFT JOIN videos_address va ON va.id = h.video_address_id
+        WHERE
+            h.id = #{id}
+    </select>
+</mapper>
